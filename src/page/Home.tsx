@@ -62,13 +62,17 @@ export default function Home() {
     useEffect(() => {
         try {
             localStorage.setItem(LS_KEYS.people, JSON.stringify(people));
-        } catch {}
+        } catch {
+            // Intentionally ignore write errors (e.g., private browsing mode)
+        }
     }, [people]);
 
     useEffect(() => {
         try {
             localStorage.setItem(LS_KEYS.results, JSON.stringify(arrayPeople));
-        } catch {}
+        } catch {
+            /* empty */
+        }
     }, [arrayPeople]);
 
     useEffect(() => {
@@ -77,7 +81,9 @@ export default function Home() {
                 LS_KEYS.lastDraw,
                 JSON.stringify(lastDrawList)
             );
-        } catch {}
+        } catch {
+            /* empty */
+        }
     }, [lastDrawList]);
 
     // 🧽 effacer les résultats (colonne droite / modale)
@@ -127,7 +133,6 @@ export default function Home() {
                                     }
                                 }}
                                 lastDrawList={lastDrawList}
-                                setLastDrawList={setLastDrawList}
                             />
                         </div>
 

@@ -1,16 +1,11 @@
-import {
-    useRef,
-    useState,
-    useEffect,
-    type FormEvent,
-    type ChangeEvent,
-} from "react";
+import { useRef, useState, type FormEvent, type ChangeEvent } from "react";
 
 type ListOfPeopleProps = {
     people: string[];
     setPeople: React.Dispatch<React.SetStateAction<string[]>>;
     setArrayPeople: React.Dispatch<React.SetStateAction<string[]>>;
     arrayPeople: string[];
+    lastDrawList: string[];
 };
 
 /* ================================
