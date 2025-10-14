@@ -97,10 +97,6 @@ export default function Home() {
             <div className="shell">
                 <header className="header">
                     <h1>🎄 Secret Santa</h1>
-                    <p>
-                        Design simple, centré, 2 colonnes (tablette/pc) & modale
-                        mobile
-                    </p>
                 </header>
 
                 <div className="grid">
