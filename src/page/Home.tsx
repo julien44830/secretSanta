@@ -26,12 +26,7 @@ function isStringArray(v: unknown): v is string[] {
 
 export default function Home() {
     // 🧠 états principaux
-    const [people, setPeople] = useState<string[]>([
-        "Alice",
-        "Bob",
-        "Charlie",
-        "Rose",
-    ]);
+    const [people, setPeople] = useState<string[]>([]);
     const [arrayPeople, setArrayPeople] = useState<string[]>([]);
     // 💾 liste utilisée lors du dernier tirage (pour la règle “bloquer si identique”)
     const [lastDrawList, setLastDrawList] = useState<string[]>([]);
