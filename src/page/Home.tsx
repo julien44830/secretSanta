@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { MusicProvider } from "../music/MusicProvider";
+import MusicGate from "../components/MusicGate";
+import MusicControls from "../components/MusicControls";
 import ListOfPeople from "../components/ListOfPeople";
 import ArrayOfPeople from "../components/ArrayOfPeople";
 
@@ -85,142 +88,146 @@ export default function Home() {
     const clearResults = () => setArrayPeople([]);
 
     return (
-        <main
-            className="app"
-            aria-label="Secret Santa App"
-        >
-            <div className="shell">
-                <header className="header">
-                    <h1>🎄 Secret Santa</h1>
-                </header>
+        <MusicProvider src="/christmas-loop.mp3">
+            <MusicGate />{" "}
+            <main
+                className="app"
+                aria-label="Secret Santa App"
+            >
+                <div className="shell">
+                    <header className="header">
+                        <h1>🎄 Secret Santa</h1>
+                    </header>
 
-                <div className="grid">
-                    {/* 🧍 Colonne gauche : participants */}
-                    <section
-                        className="card"
-                        aria-labelledby="participants-title"
-                    >
-                        <h2
-                            id="participants-title"
-                            className="section-title"
+                    <div className="grid">
+                        {/* 🧍 Colonne gauche : participants */}
+                        <section
+                            className="card"
+                            aria-labelledby="participants-title"
                         >
-                            Participants
-                        </h2>
+                            <h2
+                                id="participants-title"
+                                className="section-title"
+                            >
+                                Participants
+                            </h2>
 
-                        <div className="card-body">
-                            <ListOfPeople
-                                people={people}
-                                setPeople={setPeople}
-                                arrayPeople={arrayPeople}
-                                setArrayPeople={(lines) => {
-                                    setArrayPeople(lines);
-                                    // ouverture auto de la modale en mobile
-                                    if (
-                                        window.matchMedia?.(
-                                            "(max-width: 759px)"
-                                        ).matches
-                                    ) {
-                                        setIsModalOpen(true);
-                                    }
-                                }}
-                                lastDrawList={lastDrawList}
-                            />
-                        </div>
-
-                        {/* bouton visible seulement en mobile (CSS .open-results) */}
-                        <button
-                            type="button"
-                            className="btn open-results"
-                            onClick={openModal}
-                            aria-haspopup="dialog"
-                            aria-controls="results-modal"
-                        >
-                            Voir les résultats
-                        </button>
-                    </section>
-
-                    {/* 🧾 Colonne droite : résultats (tablette/desktop) */}
-                    <section
-                        className="card results-panel"
-                        aria-labelledby="results-title"
-                    >
-                        <h2
-                            id="results-title"
-                            className="section-title"
-                        >
-                            Résultats
-                        </h2>
-
-                        <div className="card-body results-scroll">
-                            <div className="results">
-                                <ArrayOfPeople people={arrayPeople} />
+                            <div className="card-body">
+                                <ListOfPeople
+                                    people={people}
+                                    setPeople={setPeople}
+                                    arrayPeople={arrayPeople}
+                                    setArrayPeople={(lines) => {
+                                        setArrayPeople(lines);
+                                        // ouverture auto de la modale en mobile
+                                        if (
+                                            window.matchMedia?.(
+                                                "(max-width: 759px)"
+                                            ).matches
+                                        ) {
+                                            setIsModalOpen(true);
+                                        }
+                                    }}
+                                    lastDrawList={lastDrawList}
+                                />
                             </div>
-                        </div>
 
-                        <button
-                            type="button"
-                            className="btn btn--secondary"
-                            onClick={clearResults}
+                            {/* bouton visible seulement en mobile (CSS .open-results) */}
+                            <button
+                                type="button"
+                                className="btn open-results"
+                                onClick={openModal}
+                                aria-haspopup="dialog"
+                                aria-controls="results-modal"
+                            >
+                                Voir les résultats
+                            </button>
+                        </section>
+
+                        {/* 🧾 Colonne droite : résultats (tablette/desktop) */}
+                        <section
+                            className="card results-panel"
+                            aria-labelledby="results-title"
                         >
-                            Effacer les résultats
-                        </button>
-                    </section>
-                </div>
-            </div>
-
-            {/* 📱 Modale mobile des résultats */}
-            {isModalOpen && (
-                <div
-                    className="modal-backdrop"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="results-modal-title"
-                    id="results-modal"
-                    onClick={closeModal}
-                >
-                    <div
-                        className="modal"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="modal-header">
-                            <h3
-                                id="results-modal-title"
-                                className="modal-title"
+                            <h2
+                                id="results-title"
+                                className="section-title"
                             >
                                 Résultats
-                            </h3>
-                            <button
-                                className="icon-btn"
-                                onClick={closeModal}
-                                aria-label="Fermer"
-                            >
-                                ✕
-                            </button>
-                        </div>
+                            </h2>
 
-                        <div className="modal-body">
-                            <div className="results">
-                                <ArrayOfPeople people={arrayPeople} />
+                            <div className="card-body results-scroll">
+                                <div className="results">
+                                    <ArrayOfPeople people={arrayPeople} />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="modal-footer">
                             <button
+                                type="button"
                                 className="btn btn--secondary"
                                 onClick={clearResults}
                             >
                                 Effacer les résultats
                             </button>
-                            <button
-                                className="btn"
-                                onClick={closeModal}
-                            >
-                                Fermer
-                            </button>
-                        </div>
+                        </section>
                     </div>
                 </div>
-            )}
-        </main>
+
+                {/* 📱 Modale mobile des résultats */}
+                {isModalOpen && (
+                    <div
+                        className="modal-backdrop"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="results-modal-title"
+                        id="results-modal"
+                        onClick={closeModal}
+                    >
+                        <div
+                            className="modal"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header">
+                                <h3
+                                    id="results-modal-title"
+                                    className="modal-title"
+                                >
+                                    Résultats
+                                </h3>
+                                <button
+                                    className="icon-btn"
+                                    onClick={closeModal}
+                                    aria-label="Fermer"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="modal-body">
+                                <div className="results">
+                                    <ArrayOfPeople people={arrayPeople} />
+                                </div>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button
+                                    className="btn btn--secondary"
+                                    onClick={clearResults}
+                                >
+                                    Effacer les résultats
+                                </button>
+                                <button
+                                    className="btn"
+                                    onClick={closeModal}
+                                >
+                                    Fermer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </main>
+            <MusicControls />
+        </MusicProvider>
     );
 }

@@ -63,15 +63,15 @@ body {
 
 /* ------------------ Layout global ------------------ */
 .app {
-    min-height: 100svh;
+    /* min-height: 100svh; */
     display: grid;
     place-items: center; /* centre contenu */
     padding: 16px;
 }
 
 .shell {
-    width: 100vw;
-    height: 90vh; /* garantit la tenue dans l'écran */
+    width: 90vw;
+    height: 80vh; /* garantit la tenue dans l'écran */
     max-width: 1040px;
     display: grid;
     grid-template-rows: auto 1fr; /* header + contenu */
