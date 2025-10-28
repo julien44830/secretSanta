@@ -1,42 +1,56 @@
-// src/components/MusicControls.tsx
 import React from "react";
 import { MusicContext } from "../music/MusicProvider";
+import "./MusicControls.css"; // ← import du CSS
 
 export default function MusicControls() {
     const { enabled, disable, enableWithUserGesture, volume, setVolume } =
         React.useContext(MusicContext);
 
     return (
-        <div className="fixed bottom-4 right-4 rounded-2xl bg-white/90 backdrop-blur px-4 py-3 shadow-lg flex items-center gap-3">
+        // 🧊 panneau flottant en bas/droite, style verre dépoli
+        <div
+            className="music-ctrl"
+            role="region"
+            aria-label="Contrôles musique"
+        >
             {/* Bouton On/Off */}
             {enabled ? (
                 <button
                     onClick={disable}
-                    className="text-sm rounded-md border px-3 py-1 hover:bg-gray-50"
+                    className="music-ctrl__btn"
+                    aria-label="Couper la musique"
+                    title="Couper"
                 >
                     Couper
                 </button>
             ) : (
                 <button
                     onClick={() => enableWithUserGesture()}
-                    className="text-sm rounded-md border px-3 py-1 hover:bg-gray-50"
+                    className="music-ctrl__btn"
+                    aria-label="Activer la musique"
+                    title="Activer"
                 >
                     Activer
                 </button>
             )}
 
             {/* Curseur de volume */}
-            <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-600">Vol.</span>
+            <div className="music-ctrl__vol">
+                <span aria-hidden="true">Vol.</span>
                 <input
+                    className="music-ctrl__range"
                     type="range"
                     min={0}
                     max={1}
                     step={0.01}
                     value={volume}
                     onChange={(e) => setVolume(Number(e.target.value))}
+                    aria-label="Volume"
+                    aria-valuemin={0}
+                    aria-valuemax={1}
+                    aria-valuenow={volume}
                 />
-                <span className="text-xs w-10 text-right">
+                <span className="music-ctrl__value">
                     {Math.round(volume * 100)}%
                 </span>
             </div>

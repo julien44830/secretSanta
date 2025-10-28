@@ -7,7 +7,7 @@ export default function ArrayOfPeople({ people }: ListOfPeopleProps) {
             <div className="list">
                 {people.map((person) => (
                     <div
-                        className="list-item"
+                        className="list-item "
                         key={person}
                     >
                         {person}

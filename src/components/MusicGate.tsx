@@ -1,24 +1,24 @@
 // src/components/MusicGate.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { MusicContext } from "../music/MusicProvider";
+import "./MusicGate.css"; // ← importe le CSS
 
 const LS_KEY_PREF = "music:pref";
 
 export default function MusicGate() {
     const { enableWithUserGesture, disable, setVolume, volume } =
         React.useContext(MusicContext);
+
     const [open, setOpen] = useState<boolean>(false);
     const [tempVolume, setTempVolume] = useState<number>(volume);
 
-    // ↓ On n'affiche la modale que si aucune préférence n'est encore stockée
+    // Affiche la modale seulement si aucune préférence n'est stockée
     useEffect(() => {
         const pref = localStorage.getItem(LS_KEY_PREF);
-        if (pref !== "on" && pref !== "off") {
-            setOpen(true);
-        }
+        if (pref !== "on" && pref !== "off") setOpen(true);
     }, []);
 
-    // ↓ Empêche le scroll quand la modale est ouverte
+    // Empêche le scroll quand la modale est ouverte
     useEffect(() => {
         if (!open) return;
         const original = document.body.style.overflow;
@@ -28,25 +28,36 @@ export default function MusicGate() {
         };
     }, [open]);
 
-    // ↓ Accessibilité : focus sur le premier bouton
-    const firstBtnRef = React.useRef<HTMLButtonElement | null>(null);
+    // Fermer via Échap
     useEffect(() => {
-        if (open && firstBtnRef.current) {
-            firstBtnRef.current.focus();
-        }
+        if (!open) return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") handleContinueWithout();
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
     }, [open]);
 
-    const handleAcceptWithMusic = async () => {
-        // ⚠️ Très important : lancer play() dans ce handler (geste utilisateur)
+    // Focus sur le premier bouton
+    const firstBtnRef = React.useRef<HTMLButtonElement | null>(null);
+    useEffect(() => {
+        if (open && firstBtnRef.current) firstBtnRef.current.focus();
+    }, [open]);
+
+    // Démarrer la musique (obligatoire: dans un handler utilisateur)
+    const handleAcceptWithMusic = React.useCallback(async () => {
         await enableWithUserGesture(tempVolume);
         setVolume(tempVolume);
+        localStorage.setItem(LS_KEY_PREF, "on"); // 💾 on mémorise
         setOpen(false);
-    };
+    }, [enableWithUserGesture, setVolume, tempVolume]);
 
-    const handleContinueWithout = () => {
+    // Continuer sans musique
+    const handleContinueWithout = React.useCallback(() => {
         disable();
+        localStorage.setItem(LS_KEY_PREF, "off"); // 💾 on mémorise
         setOpen(false);
-    };
+    }, [disable]);
 
     const modal = useMemo(() => {
         if (!open) return null;
@@ -55,67 +66,92 @@ export default function MusicGate() {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="music-title"
-                className="fixed inset-0 z-50 flex items-center justify-center"
+                className="music-modal-backdrop"
+                onClick={handleContinueWithout} /* click dehors → fermer */
             >
-                {/* Backdrop */}
                 <div
-                    className="absolute inset-0 bg-black/60"
-                    onClick={handleContinueWithout}
-                />
-                {/* Contenu */}
-                <div className="relative z-10 w-[min(92vw,560px)] rounded-2xl bg-white p-6 shadow-2xl">
-                    <h2
-                        id="music-title"
-                        className="text-xl font-semibold mb-2"
+                    className="music-modal"
+                    onClick={(e) =>
+                        e.stopPropagation()
+                    } /* bloc le clic interne */
+                >
+                    {/* Header */}
+                    <div
+                        className="music-modal__header"
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: 8,
+                        }}
                     >
-                        Musique en fond sonore
-                    </h2>
-                    <p className="text-sm text-gray-700 mb-4">
-                        Ce site peut jouer une musique en boucle. Souhaitez-vous
-                        continuer avec la musique&nbsp;?
-                    </p>
-
-                    <div className="mb-5">
-                        <label
-                            htmlFor="volume"
-                            className="block text-sm font-medium mb-2"
+                        <h2
+                            id="music-title"
+                            className="music-modal__title"
                         >
-                            Volume initial
-                        </label>
-                        <input
-                            id="volume"
-                            type="range"
-                            min={0}
-                            max={1}
-                            step={0.01}
-                            value={tempVolume}
-                            onChange={(e) =>
-                                setTempVolume(Number(e.target.value))
-                            }
-                            className="w-full"
-                            aria-valuemin={0}
-                            aria-valuemax={1}
-                            aria-valuenow={tempVolume}
-                        />
-                        <div className="text-xs text-gray-600 mt-1">
-                            {Math.round(tempVolume * 100)}%
+                            Musique en fond sonore
+                        </h2>
+                        <button
+                            className="music-modal__close"
+                            aria-label="Fermer"
+                            onClick={handleContinueWithout}
+                        >
+                            ✕
+                        </button>
+                    </div>
+
+                    {/* Body */}
+                    <div className="music-modal__body">
+                        <p className="music-modal__desc">
+                            Ce site peut jouer une musique en boucle.
+                            Souhaitez-vous continuer avec la musique&nbsp;?
+                        </p>
+
+                        <div className="music-range">
+                            <label
+                                htmlFor="volume"
+                                className="music-range__label"
+                            >
+                                Volume initial
+                            </label>
+                            <input
+                                id="volume"
+                                className="music-range__input"
+                                type="range"
+                                min={0}
+                                max={1}
+                                step={0.01}
+                                value={tempVolume}
+                                onChange={(e) =>
+                                    setTempVolume(Number(e.target.value))
+                                }
+                                aria-valuemin={0}
+                                aria-valuemax={1}
+                                aria-valuenow={tempVolume}
+                            />
+                            <div className="music-range__value">
+                                {Math.round(tempVolume * 100)}%
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 justify-end">
-                        <button
-                            ref={firstBtnRef}
-                            onClick={handleAcceptWithMusic}
-                            className="inline-flex items-center justify-center rounded-xl px-4 py-2 bg-black text-white hover:bg-black/90 transition"
-                        >
-                            Poursuivre avec musique
-                        </button>
-                        <button
-                            onClick={handleContinueWithout}
-                            className="inline-flex items-center justify-center rounded-xl px-4 py-2 border border-gray-300 hover:bg-gray-50 transition"
-                        >
-                            Poursuivre sans musique
-                        </button>
+                    {/* Footer */}
+                    <div className="music-modal__footer">
+                        <div className="music-actions">
+                            <button
+                                ref={firstBtnRef}
+                                onClick={handleAcceptWithMusic}
+                                className="btn"
+                            >
+                                Poursuivre avec musique
+                            </button>
+                            <button
+                                onClick={handleContinueWithout}
+                                className="btn btn--secondary"
+                            >
+                                Poursuivre sans musique
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

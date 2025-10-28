@@ -18,10 +18,11 @@ type MusicContextType = {
     setVolume: (v: number) => void;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const MusicContext = createContext<MusicContextType>({
     // valeurs par défaut (non utilisées directement)
     enabled: false,
-    volume: 0.5,
+    volume: 0.2,
     enableWithUserGesture: async () => {},
     disable: () => {},
     setVolume: () => {},
@@ -48,7 +49,7 @@ export function MusicProvider({
     });
     const [volume, setVolumeState] = useState<number>(() => {
         const raw = localStorage.getItem(LS_KEY_VOLUME);
-        const v = raw ? Number(raw) : 0.05;
+        const v = raw ? Number(raw) : 0.2;
         return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0.5;
     });
 
@@ -133,24 +134,24 @@ export function MusicProvider({
             }
             window.removeEventListener("click", handleFirstUserGesture, {
                 capture: true,
-            } as any);
+            });
             window.removeEventListener("keydown", handleFirstUserGesture, {
                 capture: true,
-            } as any);
+            });
         };
         window.addEventListener("click", handleFirstUserGesture, {
             capture: true,
-        } as any);
+        });
         window.addEventListener("keydown", handleFirstUserGesture, {
             capture: true,
-        } as any);
+        });
         return () => {
             window.removeEventListener("click", handleFirstUserGesture, {
                 capture: true,
-            } as any);
+            });
             window.removeEventListener("keydown", handleFirstUserGesture, {
                 capture: true,
-            } as any);
+            });
         };
     }, [enabled]);
 
