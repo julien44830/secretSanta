@@ -1,0 +1,133 @@
+/* =========================================================
+   🎧 MusicControls — mini panneau flottant (verre dépoli OKLCH)
+   Harmonisé avec le reste de l'UI
+   ========================================================= */
+
+/* --- conteneur flottant en bas/droite --- */
+.music-ctrl {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 40;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    background: linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--surface), transparent 0%),
+        color-mix(in oklch, var(--surface-strong), transparent 0%)
+    );
+    border: 1px solid var(--edge);
+    border-radius: 16px;
+    padding: 10px 12px;
+
+    backdrop-filter: blur(8px) saturate(1.05);
+    -webkit-backdrop-filter: blur(8px) saturate(1.05);
+    box-shadow: 0 6px 24px oklch(0 0 0 / 0.35);
+}
+
+/* évite que le panneau masque la barre d’actions mobile */
+@media (max-width: 759px) {
+    .music-ctrl {
+        width: 80vw; /* 16px de chaque côté pour le padding */
+        right: auto;
+        bottom: calc(
+            env(safe-area-inset-bottom) + 10px
+        ); /* au-dessus de ta barre mobile */
+    }
+}
+
+/* --- boutons on/off compacts (réutilise le style global) --- */
+.music-ctrl__btn {
+    font-size: 13px;
+    line-height: 1;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--edge);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: box-shadow 160ms ease, background 160ms ease,
+        transform 120ms ease;
+}
+.music-ctrl__btn:hover {
+    background: color-mix(in oklch, var(--edge), transparent 80%);
+    transform: translateY(-1px);
+}
+.music-ctrl__btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 6px var(--ring);
+}
+
+/* --- groupe volume --- */
+.music-ctrl__vol {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* slider volume (track + thumb) */
+.music-ctrl__range {
+    width: 140px;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.music-ctrl__range:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 6px var(--ring);
+}
+
+/* WebKit */
+.music-ctrl__range::-webkit-slider-runnable-track {
+    height: 6px;
+    background: color-mix(in oklch, var(--edge), transparent 30%);
+    border-radius: 999px;
+}
+.music-ctrl__range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -5px; /* centre le thumb */
+    border-radius: 50%;
+    background: var(--brand);
+    border: 1px solid color-mix(in oklch, var(--brand), white 25%);
+    box-shadow: 0 1px 4px oklch(0 0 0 / 0.25);
+    cursor: pointer;
+}
+
+/* Firefox */
+.music-ctrl__range::-moz-range-track {
+    height: 6px;
+    background: color-mix(in oklch, var(--edge), transparent 30%);
+    border-radius: 999px;
+}
+.music-ctrl__range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--brand);
+    border: 1px solid color-mix(in oklch, var(--brand), white 25%);
+    box-shadow: 0 1px 4px oklch(0 0 0 / 0.25);
+    cursor: pointer;
+}
+
+/* valeur numérique à droite du slider */
+.music-ctrl__value {
+    width: 34px;
+    text-align: right;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* petit mode compact si l’espace est serré */
+@media (max-width: 420px) {
+    .music-ctrl__range {
+        width: 100px;
+    }
+}

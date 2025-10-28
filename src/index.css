@@ -1,31 +1,22 @@
 /* =========================================================
-   🎄 Secret Santa — Design simple, centré & responsive
-   - Pas de scroll de page (overflow global hidden)
-   - Scroll uniquement dans la liste et la zone des résultats
-   - 2 colonnes en tablette/desktop
-   - Modale des résultats en mobile
+   🎄 Secret Santa — Interface fluide, fixe et responsive
    ========================================================= */
 
-/* ------------------ Thème (variables) ------------------ */
+/* ------------------ Thème (variables OKLCH) ------------------ */
 :root {
-    --bg: #0f172a; /* fond */
-    --card: #0b1224; /* carte */
-    --text: #e5e7eb; /* texte principal */
-    --muted: #94a3b8; /* texte secondaire */
-    --brand: #4f46e5; /* action */
-    --ring: rgba(79, 70, 229, 0.35);
-    --border: rgba(148, 163, 184, 0.15);
-}
+    --surface: oklch(0.24 0.03 210 / 0.52);
+    --surface-strong: oklch(0.22 0.04 210 / 0.68);
+    --edge: oklch(0.4 0.02 210 / 0.2);
+    --edge-strong: oklch(0.7 0.02 210 / 0.35);
 
-@media (prefers-color-scheme: light) {
-    :root {
-        --bg: #f1f5f9;
-        --card: #ffffff;
-        --text: #0f172a;
-        --muted: #475569;
-        --ring: rgba(79, 70, 229, 0.25);
-        --border: rgba(15, 23, 42, 0.08);
-    }
+    --text: oklch(0.94 0.02 230);
+    --muted: oklch(0.76 0.03 230);
+
+    --brand: oklch(0.6 0.2 280);
+    --ring: oklch(0.72 0.12 280 / 0.35);
+
+    --shell-pad: 16px;
+    --mobile-bar-h: 72px;
 }
 
 /* ------------------ Reset de base ------------------ */
@@ -39,92 +30,103 @@ html,
 body,
 #root {
     height: 100%;
+    background: transparent !important;
 }
 
 body {
     margin: 0;
     overflow: hidden; /* 🚫 pas de scroll global */
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-        Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial,
-        "Apple Color Emoji", "Segoe UI Emoji";
-    background: radial-gradient(
-            1100px 720px at 50% -10%,
-            rgba(99, 102, 241, 0.14),
-            transparent 50%
-        ),
-        radial-gradient(
-            900px 520px at -10% 110%,
-            rgba(59, 130, 246, 0.1),
-            transparent 40%
-        ),
-        var(--bg);
+        Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial;
     color: var(--text);
 }
 
-/* ------------------ Layout global ------------------ */
+/* ------------------ Calque de fond ------------------ */
+.bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* ------------------ Conteneur principal ------------------ */
 .app {
-    min-height: 100svh;
+    position: relative;
+    isolation: isolate;
     display: grid;
-    place-items: center; /* centre contenu */
-    padding: 16px;
+    place-items: center;
+    padding: var(--shell-pad);
+}
+.app > *:not(.bg-layer) {
+    position: relative;
+    z-index: 1;
 }
 
+/* ------------------ Layout principal ------------------ */
 .shell {
-    width: 100vw;
-    height: 90vh; /* garantit la tenue dans l'écran */
-    max-width: 1040px;
-    display: grid;
-    grid-template-rows: auto 1fr; /* header + contenu */
-    gap: 16px;
-    min-height: 0; /* autorise les enfants à scroller */
+    height: 100svh; /* ✅ hauteur fixe de l’écran */
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex;
+    flex-direction: column;
 }
-
 .header {
-    text-align: center;
+    flex: 0 0 auto;
+    padding: 10px;
 }
-
 .header h1 {
     margin: 0;
     font-size: clamp(20px, 3.2vw, 28px);
+    text-align: center;
 }
 
-.header p {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: clamp(14px, 2.4vw, 16px);
-}
-
-/* ------------------ Grille contenu ------------------ */
+/* Zone principale (grille 2 colonnes sur grand écran) */
 .grid {
-    display: grid;
-    gap: 16px;
-    grid-template-columns: 1fr; /* mobile: 1 colonne */
-    grid-auto-rows: 1fr;
-    min-height: 0; /* important pour scroll interne */
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 @media (min-width: 760px) {
     .grid {
-        grid-template-columns: 1fr 1fr; /* tablette/desktop: 2 colonnes */
+        display: grid;
+        grid-template-columns: minmax(384px, 1fr) minmax(384px, 1fr);
+        gap: 32px; /* un peu plus d’espace entre les colonnes */
+        align-items: stretch;
+        justify-content: center;
+        max-width: 1100px; /* ✅ largeur max élégante sur desktop */
+        width: 90%;
+        margin: 0 auto;
+        min-height: 0;
+        padding: 30px;
     }
 }
 
-/* ------------------ Cartes ------------------ */
+/* ------------------ Carte (verre dépoli) ------------------ */
 .card {
     background: linear-gradient(
         180deg,
-        var(--card),
-        color-mix(in oklab, var(--card), black 2%)
+        color-mix(in oklch, var(--surface), transparent 0%),
+        color-mix(in oklch, var(--surface-strong), transparent 0%)
     );
-    border: 1px solid var(--border);
+    border: 1px solid var(--edge);
     border-radius: 16px;
+    box-shadow: 0 1px 0 var(--edge-strong) inset,
+        0 10px 30px oklch(0 0 0 / 0.25);
+    backdrop-filter: blur(10px) saturate(1.05);
+    -webkit-backdrop-filter: blur(10px) saturate(1.05);
+
+    display: grid;
+    grid-template-rows: max-content 1fr max-content;
+    height: 100%;
+    min-height: 0;
+    min-width: 86vw;
     padding: 16px;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45) inset,
-        0 10px 30px rgba(0, 0, 0, 0.25);
-    display: flex; /* header / body / footer en colonne */
-    flex-direction: column;
     gap: 12px;
-    min-height: 0; /* indispensable pour overflow dans .card-body */
+}
+@media (max-width: 759px) {
+    .card {
+        max-height: 72svh;
+    }
 }
 
 .section-title {
@@ -134,11 +136,36 @@ body {
     color: var(--muted);
 }
 
-/* Corps scrollable (utilisé pour la liste et les résultats) */
+/* ------------------ Corps des cartes ------------------ */
 .card-body {
-    flex: 1 1 auto; /* prend l'espace restant */
-    min-height: 0; /* autorise le shrink vertical */
-    overflow-y: auto; /* ✅ scroll interne si contenu long */
+    min-height: 0;
+    overflow: hidden;
+}
+/* 
+.list {
+    overflow-y: scroll;
+} */
+
+/* ------------------ Structure ListOfPeople ------------------ */
+.card-body > .list-of-people {
+    display: grid;
+    grid-template-rows: max-content minmax(0, 1fr) max-content; /* form / liste / actions */
+    min-height: 100%;
+    min-width: 0;
+}
+
+/* Zone défilante de la liste */
+.card-body > .list-of-people .people-scroll {
+    min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* En mobile, on garde un espace sous la liste pour la barre fixe */
+@media (max-width: 759px) {
+    .card-body > .list-of-people .people-scroll {
+        padding-bottom: calc(var(--mobile-bar-h) + 16px);
+    }
 }
 
 /* ------------------ Formulaire ------------------ */
@@ -147,21 +174,18 @@ body {
     grid-template-columns: 1fr auto;
     gap: 10px;
 }
-
 .input {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--edge);
     color: var(--text);
     border-radius: 12px;
     padding: 10px 12px;
     outline: none;
     transition: border-color 160ms ease, box-shadow 160ms ease;
 }
-
 .input::placeholder {
-    color: color-mix(in oklab, var(--muted), transparent 30%);
+    color: color-mix(in oklch, var(--muted), transparent 30%);
 }
-
 .input:focus-visible {
     border-color: var(--brand);
     box-shadow: 0 0 0 6px var(--ring);
@@ -169,10 +193,10 @@ body {
 
 /* ------------------ Boutons ------------------ */
 .btn {
-    border: 1px solid color-mix(in oklab, var(--brand), white 20%);
+    border: 1px solid color-mix(in oklch, var(--brand), white 20%);
     background: linear-gradient(
         180deg,
-        color-mix(in oklab, var(--brand), white 8%),
+        color-mix(in oklch, var(--brand), white 8%),
         var(--brand)
     );
     color: white;
@@ -180,10 +204,9 @@ body {
     padding: 10px 14px;
     font-weight: 600;
     cursor: pointer;
+    /* white-space: nowrap; */
     transition: transform 120ms ease, filter 120ms ease, box-shadow 160ms ease;
-    white-space: nowrap;
 }
-
 .btn:hover {
     filter: brightness(1.03);
     transform: translateY(-1px);
@@ -195,142 +218,158 @@ body {
     outline: none;
     box-shadow: 0 0 0 6px var(--ring);
 }
-
 .btn--secondary {
     background: transparent;
-    border-color: var(--border);
+    border: 1px solid var(--edge);
     color: var(--text);
 }
-
-/* Bouton mobile pour ouvrir la modale résultats */
-.open-results {
-    display: block;
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    filter: none;
 }
+
+/* ------------------ Barre d’actions ------------------ */
+.actions {
+    display: grid;
+    gap: 10px;
+}
+
+/* ✅ Desktop : sticky (reste visible dans la carte) */
 @media (min-width: 760px) {
-    .open-results {
-        display: none;
+    .actions--mobile-fixed {
+        position: sticky;
+        bottom: 0;
+        margin-top: 12px;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        height: auto;
+        padding: 0;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-start;
+    }
+    .actions--mobile-fixed .btn {
+        width: auto;
     }
 }
 
-/* ------------------ Liste des participants ------------------ */
-.list {
-    display: grid;
-    gap: 6px;
-    margin: 8px 0 0;
+/* ✅ Mobile : fixe en bas de l’écran */
+@media (max-width: 759px) {
+    .actions--mobile-fixed {
+        position: fixed;
+        left: var(--shell-pad);
+        right: var(--shell-pad);
+        bottom: calc(env(safe-area-inset-bottom) + 12px);
+        z-index: 9999;
+
+        background: linear-gradient(
+            180deg,
+            color-mix(in oklch, var(--surface), transparent 0%),
+            color-mix(in oklch, var(--surface-strong), transparent 0%)
+        );
+        border: 1px solid var(--edge);
+        border-radius: 14px;
+        padding: 10px;
+        backdrop-filter: blur(8px) saturate(1.05);
+        -webkit-backdrop-filter: blur(8px) saturate(1.05);
+        box-shadow: 0 10px 30px oklch(0 0 0 / 0.35);
+
+        height: var(--mobile-bar-h);
+        align-content: center;
+    }
+    .actions--mobile-fixed .btn {
+        width: 100%;
+    }
 }
 
-.list-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    border: 1px dashed var(--border);
-    border-radius: 10px;
-    color: var(--muted);
+/* Pied de section avec 3 boutons égaux */
+.actions-footer {
+    grid-template-columns: repeat(3, 1fr);
 }
 
-/* Conteneur scroll dédié à la liste (dans .card-body) */
-.list-scroll {
-    height: 100%;
-    min-height: 0;
-    overflow: auto; /* ✅ scroll uniquement ici pour la liste */
+/* Les boutons prennent toute la cellule */
+.actions-footer .btn {
+    width: 100%;
 }
+
+/* En desktop la barre est en bas de la carte (sticky via .actions--mobile-fixed) */
+/* En mobile, .actions--mobile-fixed garde le comportement “barre fixe écran” déjà en place */
 
 /* ------------------ Résultats ------------------ */
-.results {
-    display: grid;
-    gap: 8px;
+.results-scroll {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+    height: 100%;
 }
 
-.result-line {
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: color-mix(in oklab, var(--brand), transparent 86%);
-    border: 1px solid color-mix(in oklab, var(--brand), white 70%);
-}
-
-/* Colonne résultats visible uniquement tablette/desktop */
+/* Panneau desktop (colonne droite) */
 .results-panel {
     display: none;
 }
 @media (min-width: 760px) {
     .results-panel {
-        display: flex; /* même logique que .card */
+        display: flex;
         flex-direction: column;
         min-height: 0;
     }
-}
-
-/* Conteneur scroll dédié aux résultats (dans .card-body) */
-.results-scroll {
-    height: 100%;
-    min-height: 0;
-    overflow: auto; /* ✅ scroll uniquement ici pour les résultats */
-}
-
-/* ------------------ Zone d'actions ------------------ */
-.actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 12px;
 }
 
 /* ------------------ Modale mobile (résultats) ------------------ */
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(2, 6, 23, 0.6);
+    z-index: 2147483647;
+    background: oklch(0.1 0.02 230 / 0.65);
     display: grid;
     place-items: center;
     padding: 16px;
-    z-index: 50;
+    overflow: hidden;
 }
-
 .modal {
     width: 100%;
     max-width: 520px;
     max-height: 90svh;
-    background: var(--card);
-    border: 1px solid var(--border);
+    overflow: hidden;
+    background: linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--surface), transparent 0%),
+        color-mix(in oklch, var(--surface-strong), transparent 0%)
+    );
+    border: 1px solid var(--edge);
     border-radius: 16px;
-    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px) saturate(1.05);
+    -webkit-backdrop-filter: blur(12px) saturate(1.05);
+    box-shadow: 0 20px 80px oklch(0 0 0 / 0.55);
     display: grid;
     grid-template-rows: max-content 1fr max-content;
 }
-
 .modal-header,
 .modal-footer {
     padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--edge);
 }
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .modal-footer {
     border-bottom: 0;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--edge);
 }
-
 .modal-title {
     margin: 0;
     font-size: 16px;
+    color: var(--text);
 }
-
 .modal-body {
     padding: 12px 16px;
     min-height: 0;
-    overflow: auto; /* ✅ scroll interne si beaucoup de lignes */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
-
-/* Bouton icône (fermer) */
 .icon-btn {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--edge);
     border-radius: 10px;
     padding: 6px 10px;
     color: var(--text);
@@ -341,7 +380,12 @@ body {
     box-shadow: 0 0 0 6px var(--ring);
 }
 
-/* ------------------ Responsives spécifiques ------------------ */
+body.modal-open {
+    overflow: hidden !important;
+    touch-action: none;
+}
+
+/* ------------------ Responsive petites largeurs ------------------ */
 @media (max-width: 520px) {
     .form {
         grid-template-columns: 1fr;
@@ -351,79 +395,19 @@ body {
     }
 }
 
-/* espace entre le bouton Effacer et le reste */
-.results-panel .btn--secondary {
-    margin-top: 8px;
+/* ------------------ Effet de grain subtil ------------------ */
+.bg-oklch::after {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    pointer-events: none;
+    opacity: 0.16;
+    mix-blend-mode: soft-light;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" type="fractalNoise"/></filter><rect width="120" height="120" filter="url(%23n)"/></svg>');
 }
 
-/* Bouton désactivé (ex: tirage bloqué) */
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    filter: none;
-}
-
-/* Bouton visuellement désactivé mais cliquable (pour afficher le toast) */
-/* .btn.is-disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    filter: none;
-} */
-
-/* 🔔 Toast (popup 5s) */
-.toast {
-    position: fixed;
-    left: 50%;
-    bottom: 50px;
-    transform: translateX(-50%);
-    max-width: min(92vw, 560px);
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: color-mix(in oklab, var(--brand), black 60%);
-    border: 1px solid color-mix(in oklab, var(--brand), white 30%);
-    color: white;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 60;
-    animation: toastIn 160ms ease-out both;
-}
-
-.toast-close {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: white;
-    border-radius: 8px;
-    padding: 4px 8px;
-    cursor: pointer;
-    animation: toastOut 160ms ease-out both;
-}
-.toast-close:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 6px var(--ring);
-}
-
-@keyframes toastIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, 8px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
-@keyframes toastOut {
-    from {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-    to {
-        opacity: 0;
-        transform: translate(-50%, 8px);
-    }
+/* ------------------ Perf flocons ------------------ */
+.flake {
+    will-change: transform;
+    transform: translateZ(0);
 }
