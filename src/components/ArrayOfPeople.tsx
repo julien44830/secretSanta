@@ -6,12 +6,15 @@ export default function ArrayOfPeople({ people }: ListOfPeopleProps) {
         <div className="card-body list-scroll">
             <div className="list">
                 {people.map((person) => (
-                    <div
-                        className="list-item "
-                        key={person}
-                    >
-                        {person}
-                    </div>
+                    <>
+                        <div
+                            className="list-item "
+                            key={person}
+                        >
+                            {person}
+                        </div>
+                        <hr className="line" />
+                    </>
                 ))}
             </div>
         </div>
