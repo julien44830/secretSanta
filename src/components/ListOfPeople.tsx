@@ -46,8 +46,8 @@ export default function ListOfPeople({ people, setPeople }: ListOfPeopleProps) {
             </form>
 
             {/* liste — scrolle UNIQUEMENT ici */}
-            <div className="people-scroll">
-                <div className="list">
+            <div className="people-scroll ">
+                <div className="list results-scroll">
                     {people.length === 0 ? (
                         <p style={{ color: "var(--muted)" }}>
                             Aucun participant pour le moment

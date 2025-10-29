@@ -220,7 +220,7 @@ export default function Home() {
                     <div className="grid">
                         {/* 🧍 Colonne gauche : participants */}
                         <section
-                            className="card"
+                            className="card "
                             aria-labelledby="participants-title"
                         >
                             <h2
@@ -230,7 +230,7 @@ export default function Home() {
                                 Participants
                             </h2>
 
-                            <div className="card-body">
+                            <div className="card-body results-scroll">
                                 <ListOfPeople
                                     people={people}
                                     setPeople={setPeople}

@@ -94,7 +94,7 @@ body {
         align-items: stretch;
         justify-content: center;
         max-width: 1100px; /* ✅ largeur max élégante sur desktop */
-        width: 90%;
+        width: 100%;
         margin: 0 auto;
         min-height: 0;
         padding: 30px;
@@ -119,13 +119,15 @@ body {
     grid-template-rows: max-content 1fr max-content;
     height: 100%;
     min-height: 0;
-    min-width: 86vw;
+    height: 60vh;
+    min-width: 50svh;
     padding: 16px;
     gap: 12px;
 }
 @media (max-width: 759px) {
     .card {
         max-height: 72svh;
+        min-width: 40svh;
     }
 }
 
@@ -188,7 +190,6 @@ body {
 }
 .input:focus-visible {
     border-color: var(--brand);
-    box-shadow: 0 0 0 6px var(--ring);
 }
 
 /* ------------------ Boutons ------------------ */
@@ -219,8 +220,8 @@ body {
     box-shadow: 0 0 0 6px var(--ring);
 }
 .btn--secondary {
-    background: transparent;
-    border: 1px solid var(--edge);
+    background: var(--ring);
+    border: 1px solid var(--ring);
     color: var(--text);
 }
 .btn:disabled {
@@ -262,7 +263,7 @@ body {
         position: fixed;
         left: var(--shell-pad);
         right: var(--shell-pad);
-        bottom: calc(env(safe-area-inset-bottom) + 12px);
+        bottom: calc(env(safe-area-inset-bottom) - 100px);
         z-index: 9999;
 
         background: linear-gradient(
@@ -272,7 +273,7 @@ body {
         );
         border: 1px solid var(--edge);
         border-radius: 14px;
-        padding: 10px;
+        padding: 60px 10px;
         backdrop-filter: blur(8px) saturate(1.05);
         -webkit-backdrop-filter: blur(8px) saturate(1.05);
         box-shadow: 0 10px 30px oklch(0 0 0 / 0.35);
@@ -285,9 +286,11 @@ body {
     }
 }
 
-/* Pied de section avec 3 boutons égaux */
+/* Pied de section : 3 boutons égaux (desktop par défaut) */
 .actions-footer {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
 }
 
 /* Les boutons prennent toute la cellule */
@@ -295,13 +298,36 @@ body {
     width: 100%;
 }
 
+/* --- VERSION MOBILE --- */
+@media (max-width: 759px) {
+    .actions-footer {
+        /* 2 lignes :
+       - la 1ʳᵉ pour le tirage (100%)
+       - la 2ᵉ divisée en 2 colonnes égales pour les autres boutons */
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "draw draw"
+            "clear results";
+    }
+
+    .actions-footer .btn:nth-child(1) {
+        grid-area: draw;
+    }
+    .actions-footer .btn:nth-child(2) {
+        grid-area: clear;
+    }
+    .actions-footer .btn:nth-child(3) {
+        grid-area: results;
+    }
+}
+
 /* En desktop la barre est en bas de la carte (sticky via .actions--mobile-fixed) */
 /* En mobile, .actions--mobile-fixed garde le comportement “barre fixe écran” déjà en place */
 
 /* ------------------ Résultats ------------------ */
 .results-scroll {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    /* -webkit-overflow-scrolling: touch; */
     min-height: 0;
     height: 100%;
 }
