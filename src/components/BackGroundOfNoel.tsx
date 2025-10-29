@@ -1,6 +1,6 @@
 // ../components/BackGroundOfNoel.tsx
 export default function NoelBackgroundOKLCH() {
-    const FLAKES = 120;
+    const FLAKES = 30;
 
     return (
         // ⚠️ NE PAS mettre absolute ici — c’est géré par la classe .bg-layer dans ton CSS
