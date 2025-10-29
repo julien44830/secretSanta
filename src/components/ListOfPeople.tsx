@@ -11,9 +11,11 @@ export default function ListOfPeople({ people, setPeople }: ListOfPeopleProps) {
     // ➕ ajouter une personne
     const addPerson = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const value = newPerson.trim();
-        if (!value) return;
-        setPeople((prev) => [...prev, value]);
+        const clean = newPerson.trim();
+        if (!clean) return;
+        const formatted =
+            clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+        setPeople((prev) => [...prev, formatted]);
         setNewPerson("");
     };
 
