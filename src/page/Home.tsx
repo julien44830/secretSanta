@@ -7,6 +7,7 @@ import ListOfPeople from "../components/ListOfPeople";
 import ArrayOfPeople from "../components/ArrayOfPeople";
 import NoelBackgroundOKLCH from "../components/BackGroundOfNoel";
 import { createPortal } from "react-dom";
+import ChristmasCountdown from "../components/ChristmasCountdown";
 
 /* =========================================================
    🗄️ Clés de stockage local
@@ -229,7 +230,12 @@ export default function Home() {
 
                 <div className="shell">
                     <header className="header">
-                        <h1>🎄 Secret Santa</h1>
+                        <h1>🎄 Secret Santa</h1>{" "}
+                        <ChristmasCountdown
+                            // 📝 Tout est optionnel : vous pouvez personnaliser le message final
+                            endMessage="Joyeux Noël et bon reveal de Secret Santa ! 🎅🎁"
+                            // onComplete={() => console.log("C'est Noël !")}
+                        />
                     </header>
 
                     {/* Panneau flottant musique (CSS pur) */}
