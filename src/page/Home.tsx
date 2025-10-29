@@ -380,6 +380,7 @@ export default function Home() {
                         document.body
                     )}
             </main>
+            //{" "}
         </MusicProvider>
     );
 }

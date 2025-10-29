@@ -196,9 +196,9 @@ body {
 .btn {
     border: 1px solid color-mix(in oklch, var(--brand), white 20%);
     background: linear-gradient(
-        180deg,
-        color-mix(in oklch, var(--brand), white 8%),
-        var(--brand)
+        141deg,
+        color-mix(in oklch, oklch(0.76 0.1 193.62), white 8%),
+        oklch(0.29 0.09 280.46)
     );
     color: white;
     border-radius: 12px;
@@ -220,7 +220,11 @@ body {
     box-shadow: 0 0 0 6px var(--ring);
 }
 .btn--secondary {
-    background: var(--ring);
+    background: linear-gradient(
+        141deg,
+        color-mix(in oklch, oklch(64.473% 0.10898 41.952), white 8%),
+        oklch(0.29 0.09 280.46)
+    );
     border: 1px solid var(--ring);
     color: var(--text);
 }
@@ -436,4 +440,12 @@ body.modal-open {
 .flake {
     will-change: transform;
     transform: translateZ(0);
+}
+
+.line {
+    /* color: rgb(217, 255, 0); */
+    background: var(--edge-strong);
+    height: 1px;
+    border: none;
+    margin-top: 16px;
 }

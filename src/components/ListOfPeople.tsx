@@ -54,12 +54,15 @@ export default function ListOfPeople({ people, setPeople }: ListOfPeopleProps) {
                         </p>
                     ) : (
                         people.map((person) => (
-                            <div
-                                className="list-item"
-                                key={person}
-                            >
-                                {person}
-                            </div>
+                            <>
+                                <div
+                                    className="list-item"
+                                    key={person}
+                                >
+                                    {person}
+                                </div>
+                                <hr className="line" />
+                            </>
                         ))
                     )}
                 </div>
