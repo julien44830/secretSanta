@@ -59,16 +59,34 @@ function normalizeResults(v: unknown): string[] | null {
 /* =========================================================
    🔀 Tirage Secret Santa (shuffle)
    ========================================================= */
-function secretSanta(
-    people: string[]
-): Array<{ giver: string; receiver: string }> {
+type Draw = { giver: string; receiver: string };
+
+/**
+ * Secret Santa sans auto-attribution via l'algorithme de Sattolo.
+ * - Complexité O(n)
+ * - Marche pour n impair comme pour n pair
+ * - Produit une seule grande boucle (cycle) impliquant tout le monde
+ */
+function secretSanta(people: string[]): Draw[] {
+    // ⚠️ Cas limites
     if (people.length < 2) return [];
-    const shuffled = [...people];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+
+    // 1) On copie le tableau pour préserver l'original
+    const receivers = [...people];
+
+    // 2) Mélange de Sattolo : j ∈ [0, i-1] → pas de point fixe
+    for (let i = receivers.length - 1; i > 0; i--) {
+        // ← indice aléatoire STRICTEMENT inférieur à i
+        const j = Math.floor(Math.random() * i);
+        // ← on échange receivers[i] et receivers[j]
+        [receivers[i], receivers[j]] = [receivers[j], receivers[i]];
     }
-    return people.map((giver, i) => ({ giver, receiver: shuffled[i] }));
+
+    // 3) On associe chaque donneur au receveur à la même position
+    return people.map((giver, i) => ({
+        giver, // ← donneur
+        receiver: receivers[i], // ← receveur (différent du donneur garanti par Sattolo)
+    }));
 }
 
 /* =========================================================
